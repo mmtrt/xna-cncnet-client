@@ -75,7 +75,7 @@ public class GameLobbySettingsWindow(WindowManager windowManager) : XNAWindow(wi
         ddMaxPlayers.Name = nameof(ddMaxPlayers);
         ddMaxPlayers.ClientRectangle = new Rectangle(tbGameName.X, lblMaxPlayers.Y - 2,
             tbGameName.Width, 21);
-        for (int i = 8; i > 1; i--)
+        for (int i = 16; i > 1; i--)
             ddMaxPlayers.AddItem(i.ToString());
         ddMaxPlayers.SelectedIndex = 0;
 
@@ -138,7 +138,7 @@ public class GameLobbySettingsWindow(WindowManager windowManager) : XNAWindow(wi
     {
         tbGameName.Text = currentGameName;
         tbPassword.Text = currentPassword ?? string.Empty;
-        ddMaxPlayers.SelectedIndex = 8 - currentMaxPlayers;
+        ddMaxPlayers.SelectedIndex = 16 - currentMaxPlayers;
         ddSkillLevel.SelectedIndex = currentSkillLevel;
 
         Enable();

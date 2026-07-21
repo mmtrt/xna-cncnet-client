@@ -504,7 +504,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             discordHandler.UpdatePresence(
                 Map.UntranslatedName, GameMode.UntranslatedUIName, "LAN",
-                currentState, Players.Count, 8, side,
+                currentState, Players.Count, 16, side,
                 "LAN Game", IsHost, false, Locked, resetTimer);
         }
 
@@ -952,9 +952,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             string[] parts = data.Split(ProgramConstants.LAN_DATA_SEPARATOR);
 
-            int playerCount = parts.Length / 8;
+            int playerCount = parts.Length / 16;
 
-            if (parts.Length != playerCount * 8)
+            if (parts.Length != playerCount * 16)
                 return;
 
             PlayerInfo localPlayer = FindLocalPlayer();
@@ -965,7 +965,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
             for (int i = 0; i < playerCount; i++)
             {
-                int baseIndex = i * 8;
+                int baseIndex = i * 16;
 
                 string name = parts[baseIndex];
                 int side = Conversions.IntFromString(parts[baseIndex + 1], -1);

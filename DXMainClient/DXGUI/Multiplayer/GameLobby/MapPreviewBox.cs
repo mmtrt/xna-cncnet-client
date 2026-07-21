@@ -39,7 +39,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
     {
         public IReadOnlyList<XNAControl> SubControls => [CoopBriefingBox];
 
-        private const int MAX_STARTING_LOCATIONS = 8;
+        private const int MAX_STARTING_LOCATIONS = 16;
 
         public delegate void LocalStartingLocationSelectedEventHandler(object sender,
             LocalStartingLocationEventArgs e);

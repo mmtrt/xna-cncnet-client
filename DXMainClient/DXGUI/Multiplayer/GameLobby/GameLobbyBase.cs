@@ -214,6 +214,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         protected int UniqueGameID { get; set; }
         protected int SideCount { get; private set; }
         protected int RandomSelectorCount { get; private set; } = 1;
+        protected int startWidth;
 
         /// <summary>
         /// The maximum number of players allowed in this lobby.
@@ -1088,7 +1089,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             int playerNameWidth = ConfigIni.GetIntValue(Name, "PlayerNameWidth", 136);
             int sideWidth = ConfigIni.GetIntValue(Name, "SideWidth", 91);
             int colorWidth = ConfigIni.GetIntValue(Name, "ColorWidth", 79);
-            int startWidth = ConfigIni.GetIntValue(Name, "StartWidth", 49);
+            startWidth = ConfigIni.GetIntValue(Name, "StartWidth", 49);
             int teamWidth = ConfigIni.GetIntValue(Name, "TeamWidth", 46);
             int locationX = ConfigIni.GetIntValue(Name, "PlayerOptionLocationX", 25);
             int locationY = ConfigIni.GetIntValue(Name, "PlayerOptionLocationY", 24);
@@ -1169,8 +1170,9 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                     ddPlayerStart.AddItem(j.ToString());
                 ddPlayerStart.AllowDropDown = false;
                 ddPlayerStart.SelectedIndexChanged += CopyPlayerDataFromUI;
-                ddPlayerStart.Visible = false;
-                ddPlayerStart.Enabled = false;
+                bool startColumnVisible = startWidth > 0;
+                ddPlayerStart.Visible = startColumnVisible;
+                ddPlayerStart.Enabled = startColumnVisible;
                 ddPlayerStart.Tag = true;
 
                 ddPlayerNames[i] = ddPlayerName;
@@ -1197,7 +1199,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
             var lblColor = GeneratePlayerOptionCaption("lblColor", "COLOR".L10N("Client:Main:PlayerOptionColor"), ddPlayerColors[0].X, playerOptionCaptionLocationY);
 
             var lblStart = GeneratePlayerOptionCaption("lblStart", "START".L10N("Client:Main:PlayerOptionStart"), ddPlayerStarts[0].X, playerOptionCaptionLocationY);
-            lblStart.Visible = false;
+            lblStart.Visible = startWidth > 0;
 
             var lblTeam = GeneratePlayerOptionCaption("lblTeam", "TEAM".L10N("Client:Main:PlayerOptionTeam"), ddPlayerTeams[0].X, playerOptionCaptionLocationY);
 
@@ -2351,18 +2353,23 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 ddPlayerName.Items[3].Text = "Ban".L10N("Client:Main:Ban");
                 ddPlayerName.SelectedIndex = 0;
                 ddPlayerName.AllowDropDown = false;
+                ddPlayerName.Visible = true;
 
                 bool allowPlayerOptionsChange = allowOptionsChange || pInfo.Name == ProgramConstants.PLAYERNAME;
 
                 ddPlayerSides[pId].SelectedIndex = pInfo.SideId;
                 ddPlayerSides[pId].AllowDropDown = !playerExtraOptions.IsForceRandomSides && allowPlayerOptionsChange;
+                ddPlayerSides[pId].Visible = true;
 
                 ddPlayerColors[pId].SelectedIndex = pInfo.ColorId;
                 ddPlayerColors[pId].AllowDropDown = !playerExtraOptions.IsForceRandomColors && allowPlayerOptionsChange;
+                ddPlayerColors[pId].Visible = true;
 
                 ddPlayerStarts[pId].SelectedIndex = pInfo.StartingLocation;
+                ddPlayerStarts[pId].Visible = startWidth > 0;
 
                 ddPlayerTeams[pId].SelectedIndex = pInfo.TeamId;
+                ddPlayerTeams[pId].Visible = true;
                 if (GameModeMap != null)
                 {
                     ddPlayerTeams[pId].AllowDropDown = !playerExtraOptions.IsForceNoTeams && allowPlayerOptionsChange && !GameModeMap.IsCoop && !GameModeMap.ForceNoTeams;
@@ -2414,18 +2421,23 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 ddPlayerName.Items[2].Text = ProgramConstants.AI_PLAYER_NAMES[1];
                 ddPlayerName.Items[3].Text = ProgramConstants.AI_PLAYER_NAMES[2];
                 ddPlayerName.SelectedIndex = 0;
+                ddPlayerName.Visible = true;
 
                 ddPlayerSides[ddIndex].SelectedIndex = -1;
                 ddPlayerSides[ddIndex].AllowDropDown = false;
+                ddPlayerSides[ddIndex].Visible = true;
 
                 ddPlayerColors[ddIndex].SelectedIndex = -1;
                 ddPlayerColors[ddIndex].AllowDropDown = false;
+                ddPlayerColors[ddIndex].Visible = true;
 
-                ddPlayerStarts[ddIndex].SelectedIndex = -1;
+                ddPlayerStarts[ddIndex].SelectedIndex = 0;
                 ddPlayerStarts[ddIndex].AllowDropDown = false;
+                ddPlayerStarts[ddIndex].Visible = startWidth > 0;
 
                 ddPlayerTeams[ddIndex].SelectedIndex = -1;
                 ddPlayerTeams[ddIndex].AllowDropDown = false;
+                ddPlayerTeams[ddIndex].Visible = true;
             }
 
             if (allowOptionsChange && Players.Count + AIPlayers.Count < MAX_PLAYER_COUNT)

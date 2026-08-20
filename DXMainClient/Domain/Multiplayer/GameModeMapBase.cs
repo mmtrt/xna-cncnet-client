@@ -14,7 +14,7 @@ namespace DTAClient.Domain.Multiplayer
 {
     public abstract class GameModeMapBase
     {
-        public const int MAX_PLAYERS = 8;
+        public const int MAX_PLAYERS = 16;
 
         /// <summary>
         /// The maximum amount of players supported by the map or a game mode (such as a 2v2 mode).

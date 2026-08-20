@@ -1846,7 +1846,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
         /// <returns>The number of human player teams in the game.</returns>
         private int GetPvPTeamCount()
         {
-            int[] teamPlayerCounts = new int[4];
+            int[] teamPlayerCounts = new int[ProgramConstants.TEAMS.Count];
             int playerTeamCount = 0;
 
             foreach (PlayerInfo pInfo in Players)
@@ -2734,7 +2734,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 return Rank.None;
 
             // These variables are used by both the skirmish and multiplayer code paths
-            int[] teamMemberCounts = new int[5];
+            int[] teamMemberCounts = new int[ProgramConstants.TEAMS.Count + 1];
             int lowestEnemyAILevel = 2;
             int highestAllyAILevel = 0;
 
@@ -2807,7 +2807,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 // as the human players' team
                 int allyCount = teamMemberCounts[localPlayer.TeamId];
 
-                for (int i = 1; i < 5; i++)
+                for (int i = 1; i <= ProgramConstants.TEAMS.Count; i++)
                 {
                     if (i == localPlayer.TeamId)
                         continue;
@@ -2843,7 +2843,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
                 // as the local player's team
                 int allyCount = teamMemberCounts[localPlayer.TeamId];
 
-                for (int i = 1; i < 5; i++)
+                for (int i = 1; i <= ProgramConstants.TEAMS.Count; i++)
                 {
                     if (i == localPlayer.TeamId)
                         continue;
@@ -2857,7 +2857,7 @@ namespace DTAClient.DXGUI.Multiplayer.GameLobby
 
                 // Check that there is a team other than the players' team that is at least as large
                 bool pass = false;
-                for (int i = 1; i < 5; i++)
+                for (int i = 1; i <= ProgramConstants.TEAMS.Count; i++)
                 {
                     if (i == localPlayer.TeamId)
                         continue;

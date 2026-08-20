@@ -8,23 +8,26 @@ namespace DTAClient.Domain.Multiplayer
 {
     /// <summary>
     /// A helper class for setting up alliances in spawn.ini.
+    /// Supports all teams defined in ProgramConstants.TEAMS (A–H = TeamId 1–8).
     /// </summary>
     public static class AllianceHolder
     {
         public static void WriteInfoToSpawnIni(
             List<PlayerInfo> players,
-            List<PlayerInfo> aiPlayers, 
+            List<PlayerInfo> aiPlayers,
             List<int> multiCmbIndexes,
             List<PlayerHouseInfo> playerHouseInfos,
             List<TeamStartMapping> teamStartMappings,
             IniFile spawnIni
         )
         {
-            List<int> team1MultiMemberIds = new List<int>();
-            List<int> team2MultiMemberIds = new List<int>();
-            List<int> team3MultiMemberIds = new List<int>();
-            List<int> team4MultiMemberIds = new List<int>();
+            // TeamId is 1-based (A=1 … H=8). Index 0 unused.
+            int teamCount = ProgramConstants.TEAMS.Count;
+            var teamMembers = new List<int>[teamCount + 1];
+            for (int t = 1; t <= teamCount; t++)
+                teamMembers[t] = new List<int>();
 
+            // Human players
             for (int pId = 0; pId < players.Count; pId++)
             {
                 var phi = playerHouseInfos[pId];
@@ -32,28 +35,12 @@ namespace DTAClient.Domain.Multiplayer
                 if (teamId <= 0)
                     teamId = teamStartMappings?.Find(sa => sa.StartingWaypoint == phi.StartingWaypoint)?.TeamId ?? 0;
 
-                if (teamId > 0)
-                {
-                    switch (teamId)
-                    {
-                        case 1:
-                            team1MultiMemberIds.Add(multiCmbIndexes.FindIndex(c => c == pId) + 1);
-                            break;
-                        case 2:
-                            team2MultiMemberIds.Add(multiCmbIndexes.FindIndex(c => c == pId) + 1);
-                            break;
-                        case 3:
-                            team3MultiMemberIds.Add(multiCmbIndexes.FindIndex(c => c == pId) + 1);
-                            break;
-                        case 4:
-                            team4MultiMemberIds.Add(multiCmbIndexes.FindIndex(c => c == pId) + 1);
-                            break;
-                    }
-                }
+                if (teamId > 0 && teamId <= teamCount)
+                    teamMembers[teamId].Add(multiCmbIndexes.FindIndex(c => c == pId) + 1);
             }
 
+            // AI players
             int multiId = multiCmbIndexes.Count + 1;
-
             for (int aiId = 0; aiId < aiPlayers.Count; aiId++)
             {
                 var phi = playerHouseInfos[multiCmbIndexes.Count + aiId];
@@ -61,33 +48,14 @@ namespace DTAClient.Domain.Multiplayer
                 if (teamId <= 0)
                     teamId = teamStartMappings?.Find(sa => sa.StartingWaypoint == phi.StartingWaypoint)?.TeamId ?? 0;
 
-
-                if (teamId > 0)
-                {
-                    switch (teamId)
-                    {
-                        case 1:
-                            team1MultiMemberIds.Add(multiId);
-                            break;
-                        case 2:
-                            team2MultiMemberIds.Add(multiId);
-                            break;
-                        case 3:
-                            team3MultiMemberIds.Add(multiId);
-                            break;
-                        case 4:
-                            team4MultiMemberIds.Add(multiId);
-                            break;
-                    }
-                }
+                if (teamId > 0 && teamId <= teamCount)
+                    teamMembers[teamId].Add(multiId);
 
                 multiId++;
             }
 
-            WriteAlliances(team1MultiMemberIds, spawnIni);
-            WriteAlliances(team2MultiMemberIds, spawnIni);
-            WriteAlliances(team3MultiMemberIds, spawnIni);
-            WriteAlliances(team4MultiMemberIds, spawnIni);
+            for (int t = 1; t <= teamCount; t++)
+                WriteAlliances(teamMembers[t], spawnIni);
         }
 
         private static void WriteAlliances(List<int> teamHouseMemberIds, IniFile spawnIni)
@@ -101,14 +69,16 @@ namespace DTAClient.Domain.Multiplayer
                     int allyHouseId = teamHouseMemberIds[allyId];
 
                     if (allyHouseId == houseId)
+                    {
                         selfFound = true;
+                    }
                     else
                     {
                         spawnIni.SetIntValue("Multi" + houseId + "_Alliances",
-                            "HouseAlly" + GetHouseAllyIndexString(allyId, selfFound),
-                            ClientConfiguration.Instance.ClientGameType == ClientType.RA
-                                ? allyHouseId + 11  // Compared with other games, Red Alert uses house IDs shifted by +12 (from -1 to +11) in multiplayer
-                                : allyHouseId - 1);
+                                             "HouseAlly" + GetHouseAllyIndexString(allyId, selfFound),
+                                             ClientConfiguration.Instance.ClientGameType == ClientType.RA
+                                             ? allyHouseId + 11  // RA multiplayer house IDs shifted +12 (from -1 to +11)
+                        : allyHouseId - 1);
                     }
                 }
             }
@@ -121,20 +91,13 @@ namespace DTAClient.Domain.Multiplayer
 
             switch (allyId)
             {
-                case 0:
-                    return "One";
-                case 1:
-                    return "Two";
-                case 2:
-                    return "Three";
-                case 3:
-                    return "Four";
-                case 4:
-                    return "Five";
-                case 5:
-                    return "Six";
-                case 6:
-                    return "Seven";
+                case 0: return "One";
+                case 1: return "Two";
+                case 2: return "Three";
+                case 3: return "Four";
+                case 4: return "Five";
+                case 5: return "Six";
+                case 6: return "Seven";
             }
 
             return "None" + allyId;
